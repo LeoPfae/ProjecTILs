@@ -215,7 +215,8 @@ make.projection <- function(query, ref=NULL,
                             ncores=1,
                             progressbar = TRUE) {
    
-  
+  print("FUNCTION HAS BEEN MODIFIED TO UPDATE ASSAY META FEATURES AFTER FINDING ORTHOGONALS")
+
   if (is.null(query)) {
     return(NULL)
   }
