@@ -202,8 +202,14 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
                                  from=species.query$col.id, to=species.ref$col.id)
     }
     query@assays[[query.assay]]@data <- query@assays[[query.assay]]@counts
-    # Custom: Added functionality to update Assay meta.features after changing features when finding orthogonal features
-    query@assays[[query.assay]]@meta.features <- data.frame(row.names = Features(query@assays[[query.assay]]))
+    print()
+    # Custom: Added functionality to update every Assay's meta.features after changing features when finding orthogonal features
+    for (assay in names(query@assays)) {
+      message(paste0("Updating meta.features for ", assay))
+      query@assays[[assay]]@meta.features <- data.frame(row.names = Features(query@assays[[assay]]))
+      message(paste0("New meta.feature length for ", assay, ": ", length(query@assays[[assay]]@meta.features), " with Features length of ", length(Features(query@assays[[assay]]))))
+      message(paste0("Query assay: ", query.assay, " with meta.feature length ", length(query@assays[[query.assay]]@meta.features), " with Features length of ", length(Features(query@assays[[query.assay]]))))
+    }
     # End of custom change
     query <- NormalizeData(query) 
   }
