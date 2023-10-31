@@ -215,8 +215,8 @@ make.projection <- function(query, ref=NULL,
                             ncores=1,
                             progressbar = TRUE) {
    
-  warning("FUNCTION HAS BEEN MODIFIED TO UPDATE ASSAY META FEATURES AFTER FINDING ORTHOGONALS")
-  warning("FUNCTION HAS BEEN MOFIDIED TO WORK WITH SEURATOBJECT V5")
+  flog.warn("FUNCTION HAS BEEN MODIFIED TO UPDATE ASSAY META FEATURES AFTER FINDING ORTHOGONALS")
+  flog.warn("FUNCTION HAS BEEN MOFIDIED TO WORK WITH SEURATOBJECT V5")
 
   if (is.null(query)) {
     return(NULL)
