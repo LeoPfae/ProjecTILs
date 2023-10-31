@@ -131,7 +131,9 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
                               skip.normalize=FALSE, id="query1",
                               alpha=0.5, remove.thr=0,
                               scGate_model=NULL, ncores=ncores) {
-  
+
+  warning("FUNCTION HAS BEEN UPDATED TO BE COMPATIBLE WITH SEURATOBJECT V5")
+
   retry.direct <- FALSE
   do.orthology <- FALSE
   
@@ -181,7 +183,8 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
   #Check if slots are populated, and normalize data.
   if (skip.normalize) {
     slot <- "data"
-    exp.mat <-  slot(query@assays[[query.assay]], name=slot)
+    #exp.mat <-  slot(query@assays[[query.assay]], name=slot)
+    exp.mat <- LayerData(query, assay = query.assay, name = slot) #CUSTOM
     if (dim(exp.mat)[1]==0) {
       stop("Data slot not found in your Seurat object. Please normalize the data")
     }
@@ -192,7 +195,8 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
     }        
   } else {
     slot <- "counts"
-    exp.mat <-  slot(query@assays[[query.assay]], name=slot)
+    #exp.mat <-  slot(query@assays[[query.assay]], name=slot)
+    exp.mat <- LayerData(query, assay = query.assay, name = slot) #CUSTOM
     if (dim(exp.mat)[1]==0) {
       stop("Counts slot not found in your Seurat object. If you already normalized your data, re-run with option skip.normalize=TRUE")
     }
@@ -201,14 +205,15 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
       query <- convert.orthologs(query, table=ortholog_table, query.assay=query.assay, slot=slot,
                                  from=species.query$col.id, to=species.ref$col.id)
     }
-    query@assays[[query.assay]]@data <- query@assays[[query.assay]]@counts
+    #query@assays[[query.assay]]@data <- query@assays[[query.assay]]@counts
+    LayerData(query, assay = query.assay, slot = data) <- LayerData(query, assay = query.assay, slot = counts)#CUSTOM
     print()
     # Custom: Added functionality to update every Assay's meta.features after changing features when finding orthogonal features
     for (assay in names(query@assays)) {
-      message(paste0("Updating meta.features for ", assay))
+      flog.info(paste0("Updating meta.features for ", assay))
       query@assays[[assay]]@meta.features <- data.frame(row.names = Features(query@assays[[assay]]))
-      message(paste0("New meta.feature length for ", assay, ": ", length(query@assays[[assay]]@meta.features), " with Features length of ", length(Features(query@assays[[assay]]))))
-      message(paste0("Query assay: ", query.assay, " with meta.feature length ", length(query@assays[[query.assay]]@meta.features), " with Features length of ", length(Features(query@assays[[query.assay]]))))
+      flog.info(paste0("New meta.feature length for ", assay, ": ", length(query@assays[[assay]]@meta.features), " with Features length of ", length(Features(query@assays[[assay]]))))
+      flog.info(paste0("Query assay: ", query.assay, " with meta.feature length ", length(query@assays[[query.assay]]@meta.features), " with Features length of ", length(Features(query@assays[[query.assay]]))))
     }
     # End of custom change
     query <- NormalizeData(query) 
