@@ -139,10 +139,7 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
   
   #Reference
   DefaultAssay(ref) <- "integrated"
-  #ref.var.features <- ref@assays$integrated@var.features
-  flog.info("At first var feature call")
-  ref.var.features <- LayerData(ref, assay = "integrated", layer = "var.features")#CUSTOM
-  flog.info("Passed first var feature call")
+  ref.var.features <- ref@assays$integrated@var.features
 
   #If query.assay not specified, use the default
   if (is.null(query.assay)) {
@@ -349,7 +346,7 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
   if (!is.null(projected)) {
       #projected@assays[[query.assay]]@var.features <- ref.var.features
       flog.info("At second var feature call")
-      LayerData(projected, assay = "query.assay", layer = "var.features") <- ref.var.features #CUSTOM
+      LayerData(projected, assay = query.assay, layer = "var.features") <- ref.var.features #CUSTOM
       flog.info("Passed second var feature call")
       cellnames <- gsub("^Q_","",colnames(projected))  #remove prefix from cell names
       projected <- RenameCells(projected, new.names=cellnames)
