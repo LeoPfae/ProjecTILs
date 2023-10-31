@@ -139,7 +139,10 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
   
   #Reference
   DefaultAssay(ref) <- "integrated"
+  flog.info("At first var.features point")
+  flog.info(class(ref@assays$integrated))
   ref.var.features <- ref@assays$integrated@var.features
+  flog.info("Passed first var.features point")
 
   #If query.assay not specified, use the default
   if (is.null(query.assay)) {
