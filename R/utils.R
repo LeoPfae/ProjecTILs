@@ -202,7 +202,6 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
                                  from=species.query$col.id, to=species.ref$col.id)
     }
     query@assays[[query.assay]]@data <- query@assays[[query.assay]]@counts
-    print()
     # Custom: Added functionality to update every Assay's meta.features after changing features when finding orthogonal features
     for (assay in names(query@assays)) {
       message(paste0("Updating meta.features for ", assay))
