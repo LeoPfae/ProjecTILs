@@ -131,19 +131,14 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
                               skip.normalize=FALSE, id="query1",
                               alpha=0.5, remove.thr=0,
                               scGate_model=NULL, ncores=ncores) {
-
-  flog.warn("FUNCTION HAS BEEN UPDATED TO BE COMPATIBLE WITH SEURATOBJECT V5")
-
+  
   retry.direct <- FALSE
   do.orthology <- FALSE
   
   #Reference
   DefaultAssay(ref) <- "integrated"
-  flog.info("At first var.features point")
-  flog.info(class(ref@assays$integrated))
   ref.var.features <- ref@assays$integrated@var.features
-  flog.info("Passed first var.features point")
-
+  
   #If query.assay not specified, use the default
   if (is.null(query.assay)) {
     query.assay <- DefaultAssay(query)
@@ -186,8 +181,7 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
   #Check if slots are populated, and normalize data.
   if (skip.normalize) {
     slot <- "data"
-    #exp.mat <-  slot(query@assays[[query.assay]], name=slot)
-    exp.mat <- LayerData(query, assay = query.assay, name = slot) #CUSTOM
+    exp.mat <-  slot(query@assays[[query.assay]], name=slot)
     if (dim(exp.mat)[1]==0) {
       stop("Data slot not found in your Seurat object. Please normalize the data")
     }
@@ -198,8 +192,7 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
     }        
   } else {
     slot <- "counts"
-    #exp.mat <-  slot(query@assays[[query.assay]], name=slot)
-    exp.mat <- LayerData(query, assay = query.assay, name = slot) #CUSTOM
+    exp.mat <-  slot(query@assays[[query.assay]], name=slot)
     if (dim(exp.mat)[1]==0) {
       stop("Counts slot not found in your Seurat object. If you already normalized your data, re-run with option skip.normalize=TRUE")
     }
@@ -208,15 +201,14 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
       query <- convert.orthologs(query, table=ortholog_table, query.assay=query.assay, slot=slot,
                                  from=species.query$col.id, to=species.ref$col.id)
     }
-    #query@assays[[query.assay]]@data <- query@assays[[query.assay]]@counts
-    LayerData(query, assay = query.assay, slot = data) <- LayerData(query, assay = query.assay, slot = counts)#CUSTOM
+    query@assays[[query.assay]]@data <- query@assays[[query.assay]]@counts
     print()
     # Custom: Added functionality to update every Assay's meta.features after changing features when finding orthogonal features
     for (assay in names(query@assays)) {
-      flog.info(paste0("Updating meta.features for ", assay))
+      message(paste0("Updating meta.features for ", assay))
       query@assays[[assay]]@meta.features <- data.frame(row.names = Features(query@assays[[assay]]))
-      flog.info(paste0("New meta.feature length for ", assay, ": ", length(query@assays[[assay]]@meta.features), " with Features length of ", length(Features(query@assays[[assay]]))))
-      flog.info(paste0("Query assay: ", query.assay, " with meta.feature length ", length(query@assays[[query.assay]]@meta.features), " with Features length of ", length(Features(query@assays[[query.assay]]))))
+      message(paste0("New meta.feature length for ", assay, ": ", length(query@assays[[assay]]@meta.features), " with Features length of ", length(Features(query@assays[[assay]]))))
+      message(paste0("Query assay: ", query.assay, " with meta.feature length ", length(query@assays[[query.assay]]@meta.features), " with Features length of ", length(Features(query@assays[[query.assay]]))))
     }
     # End of custom change
     query <- NormalizeData(query) 
@@ -347,10 +339,7 @@ projection.helper <- function(query, ref=NULL, filter.cells=TRUE, query.assay=NU
   }
   
   if (!is.null(projected)) {
-      #projected@assays[[query.assay]]@var.features <- ref.var.features
-      flog.info("At second var feature call")
-      #LayerData(projected, assay = query.assay, layer = "var.features") <- ref.var.features #CUSTOM
-      flog.info("Passed second var feature call")
+      projected@assays[[query.assay]]@var.features <- ref.var.features
       cellnames <- gsub("^Q_","",colnames(projected))  #remove prefix from cell names
       projected <- RenameCells(projected, new.names=cellnames)
   }
